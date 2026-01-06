@@ -8,7 +8,8 @@ import { ImageUpload } from '@/components/ImageUpload';
 import { ScanProgress } from '@/components/ScanProgress';
 import { CardSearchResults } from '@/components/CardSearchResults';
 import { CardResult } from '@/components/CardResult';
-import { CardInfo, ExchangeRates } from '@/types/card';
+import { GameSelector } from '@/components/GameSelector';
+import { CardInfo, CardGame, ExchangeRates } from '@/types/card';
 import { extractTextFromImage, parseCardInfo } from '@/services/ocrService';
 import { searchCard } from '@/services/cardApiService';
 import { getExchangeRates } from '@/services/currencyService';
@@ -33,6 +34,7 @@ export default function Index() {
   const [exchangeRates, setExchangeRates] = useState<ExchangeRates>({ brl: 5, btc: 0.00001 });
   const [extractedText, setExtractedText] = useState('');
   const [manualSearch, setManualSearch] = useState('');
+  const [selectedGame, setSelectedGame] = useState<CardGame | null>(null);
   const { toast } = useToast();
 
   const processImage = useCallback(async (imageData: string) => {
@@ -64,7 +66,7 @@ export default function Index() {
         return;
       }
 
-      const cards = await searchCard(possibleName);
+      const cards = await searchCard(possibleName, selectedGame || undefined);
       setFoundCards(cards);
       setScanProgress(80);
 
@@ -94,7 +96,7 @@ export default function Index() {
     setScanProgress(30);
 
     try {
-      const cards = await searchCard(manualSearch);
+      const cards = await searchCard(manualSearch, selectedGame || undefined);
       setFoundCards(cards);
       setScanProgress(70);
 
@@ -131,6 +133,7 @@ export default function Index() {
     setSelectedCardIndex(0);
     setExtractedText('');
     setManualSearch('');
+    setSelectedGame(null);
   };
 
   // Camera View
@@ -163,6 +166,14 @@ export default function Index() {
               <p className="text-muted-foreground">
                 Capture fotos de cartas Magic e Pokémon para identificar e ver preços
               </p>
+            </div>
+
+            {/* Game Selector */}
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground text-center">
+                Selecione o tipo de carta (opcional)
+              </p>
+              <GameSelector selected={selectedGame} onSelect={setSelectedGame} />
             </div>
 
             {/* Feature Cards */}
