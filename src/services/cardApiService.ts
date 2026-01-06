@@ -6,11 +6,38 @@ const SCRYFALL_API = 'https://api.scryfall.com';
 // Pokemon TCG API
 const POKEMON_API = 'https://api.pokemontcg.io/v2';
 
+// Simple in-memory cache
+const cache = new Map<string, { data: CardInfo[]; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function getCached(key: string): CardInfo[] | null {
+  const cached = cache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+  cache.delete(key);
+  return null;
+}
+
+function setCache(key: string, data: CardInfo[]): void {
+  cache.set(key, { data, timestamp: Date.now() });
+}
+
 export async function searchMTGCard(query: string): Promise<CardInfo[]> {
+  const cacheKey = `mtg:${query.toLowerCase()}`;
+  const cached = getCached(cacheKey);
+  if (cached) return cached;
+
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    
     const response = await fetch(
-      `${SCRYFALL_API}/cards/search?q=${encodeURIComponent(query)}&order=released&dir=desc`
+      `${SCRYFALL_API}/cards/search?q=${encodeURIComponent(query)}&order=released&dir=desc`,
+      { signal: controller.signal }
     );
+    
+    clearTimeout(timeout);
     
     if (!response.ok) {
       if (response.status === 404) return [];
@@ -19,7 +46,7 @@ export async function searchMTGCard(query: string): Promise<CardInfo[]> {
     
     const data = await response.json();
     
-    return data.data.slice(0, 5).map((card: any) => ({
+    const results = data.data.slice(0, 5).map((card: any) => ({
       id: card.id,
       name: card.name,
       game: 'mtg' as CardGame,
@@ -37,17 +64,34 @@ export async function searchMTGCard(query: string): Promise<CardInfo[]> {
       type: card.type_line,
       text: card.oracle_text,
     }));
+    
+    setCache(cacheKey, results);
+    return results;
   } catch (error) {
+    if ((error as Error).name === 'AbortError') {
+      console.warn('MTG search timeout');
+      return [];
+    }
     console.error('Error searching MTG cards:', error);
     return [];
   }
 }
 
 export async function searchPokemonCard(query: string): Promise<CardInfo[]> {
+  const cacheKey = `pokemon:${query.toLowerCase()}`;
+  const cached = getCached(cacheKey);
+  if (cached) return cached;
+
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    
     const response = await fetch(
-      `${POKEMON_API}/cards?q=name:"${encodeURIComponent(query)}*"&pageSize=5&orderBy=-set.releaseDate`
+      `${POKEMON_API}/cards?q=name:"${encodeURIComponent(query)}*"&pageSize=5&orderBy=-set.releaseDate`,
+      { signal: controller.signal }
     );
+    
+    clearTimeout(timeout);
     
     if (!response.ok) {
       throw new Error('Failed to fetch Pokemon cards');
@@ -55,7 +99,7 @@ export async function searchPokemonCard(query: string): Promise<CardInfo[]> {
     
     const data = await response.json();
     
-    return data.data.map((card: any) => ({
+    const results = data.data.map((card: any) => ({
       id: card.id,
       name: card.name,
       game: 'pokemon' as CardGame,
@@ -73,7 +117,14 @@ export async function searchPokemonCard(query: string): Promise<CardInfo[]> {
       type: card.supertype,
       text: card.flavorText,
     }));
+    
+    setCache(cacheKey, results);
+    return results;
   } catch (error) {
+    if ((error as Error).name === 'AbortError') {
+      console.warn('Pokemon search timeout');
+      return [];
+    }
     console.error('Error searching Pokemon cards:', error);
     return [];
   }
@@ -85,18 +136,21 @@ export async function searchCard(
 ): Promise<CardInfo[]> {
   if (!query.trim()) return [];
   
+  // Clean and optimize query
+  const cleanQuery = query.trim().split(' ').slice(0, 3).join(' ');
+  
   if (game === 'mtg') {
-    return searchMTGCard(query);
+    return searchMTGCard(cleanQuery);
   }
   
   if (game === 'pokemon') {
-    return searchPokemonCard(query);
+    return searchPokemonCard(cleanQuery);
   }
   
-  // Search both APIs in parallel
+  // Search both APIs in parallel with race condition handling
   const [mtgResults, pokemonResults] = await Promise.all([
-    searchMTGCard(query),
-    searchPokemonCard(query),
+    searchMTGCard(cleanQuery),
+    searchPokemonCard(cleanQuery),
   ]);
   
   return [...mtgResults, ...pokemonResults];
