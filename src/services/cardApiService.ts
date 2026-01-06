@@ -1,10 +1,11 @@
 import { CardInfo, CardGame } from '@/types/card';
+import TCGdex, { Query } from '@tcgdex/sdk';
 
 // Scryfall API for Magic: The Gathering
 const SCRYFALL_API = 'https://api.scryfall.com';
 
-// Pokemon TCG API
-const POKEMON_API = 'https://api.pokemontcg.io/v2';
+// TCGdex SDK for Pokemon
+const tcgdex = new TCGdex('en');
 
 // Simple in-memory cache
 const cache = new Map<string, { data: CardInfo[]; timestamp: number }>();
@@ -83,48 +84,51 @@ export async function searchPokemonCard(query: string): Promise<CardInfo[]> {
   if (cached) return cached;
 
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000); // Pokemon API is slower
-    
-    const response = await fetch(
-      `${POKEMON_API}/cards?q=name:"${encodeURIComponent(query)}"&pageSize=5`,
-      { signal: controller.signal }
+    // Use TCGdex SDK for faster Pokemon card search
+    const cards = await tcgdex.card.list(
+      Query.create()
+        .contains('name', query)
+        .paginate(1, 5)
     );
     
-    clearTimeout(timeout);
+    if (!cards || cards.length === 0) return [];
     
-    if (!response.ok) {
-      throw new Error('Failed to fetch Pokemon cards');
-    }
+    // Fetch full card details for the first 5 results
+    const fullCards = await Promise.all(
+      cards.slice(0, 5).map(async (cardResume) => {
+        try {
+          const card = await cardResume.getCard();
+          return card;
+        } catch {
+          return null;
+        }
+      })
+    );
     
-    const data = await response.json();
-    
-    const results = data.data.map((card: any) => ({
-      id: card.id,
-      name: card.name,
-      game: 'pokemon' as CardGame,
-      set: card.set.id.toUpperCase(),
-      setName: card.set.name,
-      number: card.number,
-      rarity: card.rarity || 'Unknown',
-      imageUrl: card.images?.large || card.images?.small || '',
-      artist: card.artist,
-      isFoil: false,
-      prices: {
-        usd: card.tcgplayer?.prices?.normal?.market || card.tcgplayer?.prices?.holofoil?.market || null,
-        usdFoil: card.tcgplayer?.prices?.holofoil?.market || null,
-      },
-      type: card.supertype,
-      text: card.flavorText,
-    }));
+    const results: CardInfo[] = fullCards
+      .filter((card): card is NonNullable<typeof card> => card !== null)
+      .map((card) => ({
+        id: card.id || `pokemon-${Date.now()}`,
+        name: card.name || 'Unknown',
+        game: 'pokemon' as CardGame,
+        set: card.set?.id?.toUpperCase() || 'Unknown',
+        setName: card.set?.name || 'Unknown Set',
+        number: card.localId || '0',
+        rarity: card.rarity || 'Unknown',
+        imageUrl: card.image ? `${card.image}/high.png` : '',
+        artist: card.illustrator || 'Unknown',
+        isFoil: false,
+        prices: {
+          usd: null,
+          usdFoil: null,
+        },
+        type: card.category || 'Pokémon',
+        text: card.effect || card.description || '',
+      }));
     
     setCache(cacheKey, results);
     return results;
   } catch (error) {
-    if ((error as Error).name === 'AbortError') {
-      console.warn('Pokemon search timeout');
-      return [];
-    }
     console.error('Error searching Pokemon cards:', error);
     return [];
   }
