@@ -81,35 +81,67 @@ export function CardResult({ cards, selectedIndex, rates, onScanAgain, onCardCha
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       {/* Card Image Carousel */}
-      <div className="relative px-4">
+      <div className="relative px-4 pt-4">
         <Carousel setApi={setApi} className="w-full max-w-xs mx-auto">
-          <CarouselContent>
+          <CarouselContent className="-ml-2">
             {cards.map((c, index) => (
-              <CarouselItem key={c.id}>
-                <div className="relative aspect-[2.5/3.5] max-h-[50vh] rounded-xl overflow-hidden shadow-xl border border-border">
+              <CarouselItem key={c.id} className="pl-2">
+                <div 
+                  className={`relative aspect-[2.5/3.5] max-h-[45vh] rounded-xl overflow-hidden shadow-xl border-2 transition-all duration-300 ${
+                    index === selectedIndex 
+                      ? 'border-primary shadow-primary/20' 
+                      : 'border-border opacity-80 scale-95'
+                  }`}
+                >
                   <img
                     src={c.imageUrl}
                     alt={c.name}
                     className="w-full h-full object-contain bg-card"
                   />
                   {isFoil && index === selectedIndex && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-chart-1/20 via-transparent to-chart-3/20 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-chart-1/30 via-transparent to-chart-3/30 pointer-events-none animate-pulse" />
                   )}
+                  {/* Game badge on card */}
+                  <div className="absolute top-2 left-2">
+                    <Badge 
+                      variant="secondary" 
+                      className={`text-xs backdrop-blur-sm ${
+                        c.game === 'mtg' 
+                          ? 'bg-chart-4/80 text-primary-foreground' 
+                          : 'bg-chart-2/80 text-primary-foreground'
+                      }`}
+                    >
+                      {c.game === 'mtg' ? 'MTG' : 'PKM'}
+                    </Badge>
+                  </div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
           {cards.length > 1 && (
             <>
-              <CarouselPrevious className="left-0" />
-              <CarouselNext className="right-0" />
+              <CarouselPrevious className="left-0 bg-background/80 backdrop-blur-sm border-border hover:bg-primary hover:text-primary-foreground transition-colors" />
+              <CarouselNext className="right-0 bg-background/80 backdrop-blur-sm border-border hover:bg-primary hover:text-primary-foreground transition-colors" />
             </>
           )}
         </Carousel>
+        
+        {/* Pagination dots */}
         {cards.length > 1 && (
-          <p className="text-center text-xs text-muted-foreground mt-2">
-            {selectedIndex + 1} de {cards.length} cartas
-          </p>
+          <div className="flex items-center justify-center gap-1.5 mt-3">
+            {cards.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => api?.scrollTo(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                  index === selectedIndex 
+                    ? 'bg-primary w-6' 
+                    : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                }`}
+                aria-label={`Ir para carta ${index + 1}`}
+              />
+            ))}
+          </div>
         )}
       </div>
 
