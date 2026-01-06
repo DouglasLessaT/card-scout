@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Camera, Search, Zap, TrendingUp, Sparkles } from 'lucide-react';
+import { Camera, Search, TrendingUp, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Header } from '@/components/Header';
