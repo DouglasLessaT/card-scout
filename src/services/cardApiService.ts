@@ -84,10 +84,10 @@ export async function searchPokemonCard(query: string): Promise<CardInfo[]> {
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => controller.abort(), 15000); // Pokemon API is slower
     
     const response = await fetch(
-      `${POKEMON_API}/cards?q=name:"${encodeURIComponent(query)}*"&pageSize=5&orderBy=-set.releaseDate`,
+      `${POKEMON_API}/cards?q=name:"${encodeURIComponent(query)}"&pageSize=5`,
       { signal: controller.signal }
     );
     
