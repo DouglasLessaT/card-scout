@@ -107,24 +107,31 @@ export async function searchPokemonCard(query: string): Promise<CardInfo[]> {
     
     const results: CardInfo[] = fullCards
       .filter((card): card is NonNullable<typeof card> => card !== null)
-      .map((card) => ({
-        id: card.id || `pokemon-${Date.now()}`,
-        name: card.name || 'Unknown',
-        game: 'pokemon' as CardGame,
-        set: card.set?.id?.toUpperCase() || 'Unknown',
-        setName: card.set?.name || 'Unknown Set',
-        number: card.localId || '0',
-        rarity: card.rarity || 'Unknown',
-        imageUrl: card.image ? `${card.image}/high.png` : '',
-        artist: card.illustrator || 'Unknown',
-        isFoil: false,
-        prices: {
-          usd: null,
-          usdFoil: null,
-        },
-        type: card.category || 'Pokémon',
-        text: card.effect || card.description || '',
-      }));
+      .map((card) => {
+        // Extract prices from TCGdex pricing data (TCGPlayer)
+        const tcgplayer = (card as any).pricing?.tcgplayer;
+        const normalPrice = tcgplayer?.normal?.marketPrice || tcgplayer?.unlimitedHolofoil?.marketPrice || null;
+        const holoPrice = tcgplayer?.holofoil?.marketPrice || tcgplayer?.reverseHolofoil?.marketPrice || null;
+        
+        return {
+          id: card.id || `pokemon-${Date.now()}`,
+          name: card.name || 'Unknown',
+          game: 'pokemon' as CardGame,
+          set: card.set?.id?.toUpperCase() || 'Unknown',
+          setName: card.set?.name || 'Unknown Set',
+          number: card.localId || '0',
+          rarity: card.rarity || 'Unknown',
+          imageUrl: card.image ? `${card.image}/high.png` : '',
+          artist: card.illustrator || 'Unknown',
+          isFoil: false,
+          prices: {
+            usd: normalPrice || holoPrice,
+            usdFoil: holoPrice,
+          },
+          type: card.category || 'Pokémon',
+          text: card.effect || (card as any).description || '',
+        };
+      });
     
     setCache(cacheKey, results);
     return results;
