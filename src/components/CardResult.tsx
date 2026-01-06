@@ -6,17 +6,48 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Sparkles, RotateCcw, ExternalLink } from 'lucide-react';
+import { Sparkles, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  type CarouselApi,
+} from '@/components/ui/carousel';
+import { useEffect } from 'react';
 
 interface CardResultProps {
-  card: CardInfo;
+  cards: CardInfo[];
+  selectedIndex: number;
   rates: ExchangeRates;
   onScanAgain: () => void;
+  onCardChange: (index: number) => void;
 }
 
-export function CardResult({ card, rates, onScanAgain }: CardResultProps) {
+export function CardResult({ cards, selectedIndex, rates, onScanAgain, onCardChange }: CardResultProps) {
   const [isFoil, setIsFoil] = useState(false);
-  const hasFoilPrice = card.prices.usdFoil !== null;
+  const [api, setApi] = useState<CarouselApi>();
+  const card = cards[selectedIndex];
+  const hasFoilPrice = card?.prices.usdFoil !== null;
+
+  useEffect(() => {
+    if (!api) return;
+    api.scrollTo(selectedIndex);
+  }, [api, selectedIndex]);
+
+  useEffect(() => {
+    if (!api) return;
+    const onSelect = () => {
+      onCardChange(api.selectedScrollSnap());
+    };
+    api.on('select', onSelect);
+    return () => {
+      api.off('select', onSelect);
+    };
+  }, [api, onCardChange]);
+
+  if (!card) return null;
 
   const getRarityColor = (rarity: string) => {
     const rarityLower = rarity.toLowerCase();
@@ -49,15 +80,36 @@ export function CardResult({ card, rates, onScanAgain }: CardResultProps) {
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
-      {/* Card Image */}
-      <div className="relative aspect-[2.5/3.5] max-h-[50vh] mx-auto w-full max-w-xs rounded-xl overflow-hidden shadow-xl border border-border">
-        <img
-          src={card.imageUrl}
-          alt={card.name}
-          className="w-full h-full object-contain bg-card"
-        />
-        {isFoil && (
-          <div className="absolute inset-0 bg-gradient-to-br from-chart-1/20 via-transparent to-chart-3/20 pointer-events-none" />
+      {/* Card Image Carousel */}
+      <div className="relative px-4">
+        <Carousel setApi={setApi} className="w-full max-w-xs mx-auto">
+          <CarouselContent>
+            {cards.map((c, index) => (
+              <CarouselItem key={c.id}>
+                <div className="relative aspect-[2.5/3.5] max-h-[50vh] rounded-xl overflow-hidden shadow-xl border border-border">
+                  <img
+                    src={c.imageUrl}
+                    alt={c.name}
+                    className="w-full h-full object-contain bg-card"
+                  />
+                  {isFoil && index === selectedIndex && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-chart-1/20 via-transparent to-chart-3/20 pointer-events-none" />
+                  )}
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {cards.length > 1 && (
+            <>
+              <CarouselPrevious className="left-0" />
+              <CarouselNext className="right-0" />
+            </>
+          )}
+        </Carousel>
+        {cards.length > 1 && (
+          <p className="text-center text-xs text-muted-foreground mt-2">
+            {selectedIndex + 1} de {cards.length} cartas
+          </p>
         )}
       </div>
 

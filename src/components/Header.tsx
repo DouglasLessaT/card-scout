@@ -9,7 +9,7 @@ export function Header() {
             <CreditCard className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-bold text-foreground">CardScanner</h1>
+            <h1 className="font-bold text-foreground">OracleCards</h1>
             <p className="text-xs text-muted-foreground">MTG & Pokémon</p>
           </div>
         </div>

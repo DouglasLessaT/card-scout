@@ -29,7 +29,7 @@ export default function Index() {
   const [scanProgress, setScanProgress] = useState(0);
   const [capturedImage, setCapturedImage] = useState<string>('');
   const [foundCards, setFoundCards] = useState<CardInfo[]>([]);
-  const [selectedCard, setSelectedCard] = useState<CardInfo | null>(null);
+  const [selectedCardIndex, setSelectedCardIndex] = useState<number>(0);
   const [exchangeRates, setExchangeRates] = useState<ExchangeRates>({ brl: 5, btc: 0.00001 });
   const [extractedText, setExtractedText] = useState('');
   const [manualSearch, setManualSearch] = useState('');
@@ -115,15 +115,20 @@ export default function Index() {
   };
 
   const handleSelectCard = (card: CardInfo) => {
-    setSelectedCard(card);
+    const index = foundCards.findIndex(c => c.id === card.id);
+    setSelectedCardIndex(index >= 0 ? index : 0);
     setAppState('detail');
+  };
+
+  const handleCardChange = (index: number) => {
+    setSelectedCardIndex(index);
   };
 
   const resetScan = () => {
     setAppState('home');
     setCapturedImage('');
     setFoundCards([]);
-    setSelectedCard(null);
+    setSelectedCardIndex(0);
     setExtractedText('');
     setManualSearch('');
   };
@@ -251,11 +256,13 @@ export default function Index() {
         )}
 
         {/* Detail State */}
-        {appState === 'detail' && selectedCard && (
+        {appState === 'detail' && foundCards.length > 0 && (
           <CardResult
-            card={selectedCard}
+            cards={foundCards}
+            selectedIndex={selectedCardIndex}
             rates={exchangeRates}
             onScanAgain={resetScan}
+            onCardChange={handleCardChange}
           />
         )}
       </main>
