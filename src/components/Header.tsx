@@ -1,4 +1,4 @@
-import { CreditCard, Sparkles, Moon, Sun, Globe } from 'lucide-react';
+import { Sparkles, Moon, Sun, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/contexts/LanguageContext';
+import logoSvg from '@/assets/logo.svg';
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
@@ -57,9 +58,7 @@ export function Header() {
 
         {/* Center: Logo */}
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <CreditCard className="h-5 w-5 text-primary-foreground" />
-          </div>
+          <img src={logoSvg} alt="OracleCards Logo" className="w-10 h-10" />
           <div>
             <h1 className="font-bold text-foreground">{t('appName')}</h1>
             <p className="text-xs text-muted-foreground">{t('appSubtitle')}</p>
