@@ -10,11 +10,11 @@ interface GameSelectorProps {
 
 export function GameSelector({ selected, onSelect }: GameSelectorProps) {
   return (
-    <div className="flex gap-3">
+    <div className="flex justify-center gap-4">
       <button
         onClick={() => onSelect(selected === 'mtg' ? null : 'mtg')}
         className={cn(
-          'flex-1 flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all duration-300',
+          'flex flex-col items-center justify-center w-28 h-28 rounded-2xl border-2 transition-all duration-300',
           selected === 'mtg'
             ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20 scale-105'
             : 'border-border bg-card hover:border-primary/50 hover:bg-primary/5'
@@ -24,12 +24,12 @@ export function GameSelector({ selected, onSelect }: GameSelectorProps) {
           src={magicLogo} 
           alt="Magic: The Gathering" 
           className={cn(
-            'w-16 h-16 object-contain rounded-xl transition-all duration-300',
+            'w-12 h-12 object-contain rounded-lg transition-all duration-300',
             selected === 'mtg' ? 'scale-110' : 'opacity-70'
           )}
         />
         <p className={cn(
-          'font-semibold text-sm mt-2 transition-colors',
+          'font-semibold text-xs mt-2 transition-colors',
           selected === 'mtg' ? 'text-primary' : 'text-muted-foreground'
         )}>Magic</p>
       </button>
@@ -37,7 +37,7 @@ export function GameSelector({ selected, onSelect }: GameSelectorProps) {
       <button
         onClick={() => onSelect(selected === 'pokemon' ? null : 'pokemon')}
         className={cn(
-          'flex-1 flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all duration-300',
+          'flex flex-col items-center justify-center w-28 h-28 rounded-2xl border-2 transition-all duration-300',
           selected === 'pokemon'
             ? 'border-chart-2 bg-chart-2/10 shadow-lg shadow-chart-2/20 scale-105'
             : 'border-border bg-card hover:border-chart-2/50 hover:bg-chart-2/5'
@@ -47,12 +47,12 @@ export function GameSelector({ selected, onSelect }: GameSelectorProps) {
           src={pokemonLogo} 
           alt="Pokémon TCG" 
           className={cn(
-            'w-16 h-16 object-contain rounded-xl transition-all duration-300',
+            'w-12 h-12 object-contain rounded-lg transition-all duration-300',
             selected === 'pokemon' ? 'scale-110' : 'opacity-70'
           )}
         />
         <p className={cn(
-          'font-semibold text-sm mt-2 transition-colors',
+          'font-semibold text-xs mt-2 transition-colors',
           selected === 'pokemon' ? 'text-chart-2' : 'text-muted-foreground'
         )}>Pokémon</p>
       </button>
