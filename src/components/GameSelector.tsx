@@ -71,7 +71,7 @@ export function GameSelector({ selected, onSelect }: GameSelectorProps) {
           alt="Pokémon TCG" 
           className={cn(
             'w-12 h-12 object-contain rounded-lg transition-all duration-300',
-            selected === 'mtg' ? 'scale-110' : 'opacity-70'
+            selected === 'pokemon' ? 'scale-110' : 'opacity-70'
           )}
         />
         <p className={cn(
