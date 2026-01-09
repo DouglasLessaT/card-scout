@@ -34,7 +34,7 @@ export function GameSelector({ selected, onSelect }: GameSelectorProps) {
         )}>Magic</p>
       </button>
 
-      <button
+      {/* <button
         onClick={() => onSelect(selected === 'pokemon' ? null : 'pokemon')}
         className={cn(
           'flex flex-col items-center justify-center w-28 h-28 rounded-2xl border-2 transition-all duration-300',
@@ -49,6 +49,29 @@ export function GameSelector({ selected, onSelect }: GameSelectorProps) {
           className={cn(
             'w-12 h-12 object-contain rounded-lg transition-all duration-300',
             selected === 'pokemon' ? 'scale-110' : 'opacity-70'
+          )}
+        />
+        <p className={cn(
+          'font-semibold text-xs mt-2 transition-colors',
+          selected === 'pokemon' ? 'text-chart-2' : 'text-muted-foreground'
+        )}>Pokémon</p>
+      </button> */}
+
+      <button
+        onClick={() => onSelect(selected === 'pokemon' ? null : 'pokemon')}
+        className={cn(
+          'flex flex-col items-center justify-center w-28 h-28 rounded-2xl border-2 transition-all duration-300',
+          selected === 'pokemon'
+            ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20 scale-105'
+            : 'border-border bg-card hover:border-primary/50 hover:bg-primary/5'
+        )}
+      >
+        <img 
+          src={pokemonLogo} 
+          alt="Pokémon TCG" 
+          className={cn(
+            'w-12 h-12 object-contain rounded-lg transition-all duration-300',
+            selected === 'mtg' ? 'scale-110' : 'opacity-70'
           )}
         />
         <p className={cn(

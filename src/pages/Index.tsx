@@ -153,7 +153,7 @@ export default function Index() {
       <main className="flex-1 flex flex-col">
         {/* Home State */}
         {appState === 'home' && (
-          <div className="flex-1 flex flex-col p-4 space-y-6">
+          <div className="flex-1 flex flex-col p-4 space-y-6 max-w-2xl mx-auto w-full">
             {/* Hero */}
             <div className="text-center py-6 space-y-3">
               <div className="inline-flex items-center gap-1 px-3 py-1 bg-accent rounded-full text-accent-foreground text-sm">
@@ -177,7 +177,7 @@ export default function Index() {
             </div>
 
             {/* Feature Cards */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-3 max-w-md mx-auto w-full">
               {features.map(({ icon: Icon, title, desc }) => (
                 <div
                   key={title}
@@ -193,7 +193,7 @@ export default function Index() {
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3">
+            <div className="space-y-3 max-w-md mx-auto w-full">
               <Button
                 size="lg"
                 className="w-full h-14 gap-3 text-base"
@@ -209,7 +209,7 @@ export default function Index() {
             </div>
 
             {/* Manual Search */}
-            <div className="space-y-2">
+            <div className="space-y-2 max-w-md mx-auto w-full">
               <p className="text-sm text-muted-foreground text-center">
                 ou busque manualmente
               </p>
@@ -233,7 +233,7 @@ export default function Index() {
             {/* Info Footer */}
             <div className="mt-auto pt-4 border-t border-border">
               <p className="text-xs text-center text-muted-foreground">
-                APIs: Scryfall (MTG) • Pokémon TCG API • CoinGecko • ExchangeRate
+                APIs: Scryfall (MTG) • Pokemontcg (TGC) • CoinGecko • ExchangeRate
               </p>
             </div>
           </div>
