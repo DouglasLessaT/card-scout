@@ -80,6 +80,13 @@ export function CardResult({ cards, selectedIndex, rates, onScanAgain, onCardCha
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
+         {/* Actions */}
+          <div className="pt-4">
+            <Button onClick={onScanAgain} className="w-full gap-2" size="lg">
+              <RotateCcw className="h-5 w-5" />
+              Escanear Outra Carta
+            </Button>
+          </div>
       <div className="flex flex-col-reverse lg:flex-row lg:gap-8 lg:items-start lg:justify-center p-4">
         {/* Card Info - Left side on desktop */}
         <div className="flex flex-col lg:w-96">
@@ -148,14 +155,6 @@ export function CardResult({ cards, selectedIndex, rates, onScanAgain, onCardCha
               )}
             </CardContent>
           </Card>
-
-          {/* Actions */}
-          <div className="pt-4">
-            <Button onClick={onScanAgain} className="w-full gap-2" size="lg">
-              <RotateCcw className="h-5 w-5" />
-              Escanear Outra Carta
-            </Button>
-          </div>
         </div>
 
         {/* Card Image Carousel - Right side on desktop */}
@@ -165,7 +164,7 @@ export function CardResult({ cards, selectedIndex, rates, onScanAgain, onCardCha
               {cards.map((c, index) => (
                 <CarouselItem key={c.id} className="pl-2">
                   <div 
-                    className={`relative aspect-[2.5/3.5] max-h-[45vh] lg:max-h-[60vh] rounded-xl overflow-hidden shadow-xl border-2 transition-all duration-300 ${
+                    className={` m-10 relative aspect-[2.5/3.5] max-h-[45vh] lg:max-h-[60vh] rounded-xl overflow-hidden shadow-xl border-2 transition-all duration-300 ${
                       index === selectedIndex 
                         ? 'border-primary shadow-primary/20' 
                         : 'border-border opacity-80 scale-95'
