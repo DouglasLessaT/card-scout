@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Camera, Search, TrendingUp, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -156,10 +157,12 @@ export default function Index() {
           <div className="flex-1 flex flex-col p-4 space-y-6 max-w-2xl mx-auto w-full">
             {/* Hero */}
             <div className="text-center py-6 space-y-3">
-              <div className="inline-flex items-center gap-1 px-3 py-1 bg-accent rounded-full text-accent-foreground text-sm">
-                <Sparkles className="h-4 w-4" />
-                <span>Login</span>
-              </div>
+              <Link to="/login">
+                <div className="inline-flex items-center gap-1 px-3 py-1 bg-accent rounded-full text-accent-foreground text-sm hover:bg-accent/80 transition-colors cursor-pointer">
+                  <Sparkles className="h-4 w-4" />
+                  <span>Login</span>
+                </div>
+              </Link>
               <h2 className="text-2xl font-bold text-foreground">
                 Escaneie suas cartas
               </h2>
