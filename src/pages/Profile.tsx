@@ -26,7 +26,7 @@ export default function Profile() {
   const totalValue = mockCollections.reduce((acc, c) => acc + c.totalValue, 0);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-6 pb-8">
       {/* Profile Header */}
       <Card>
         <CardContent className="p-6">

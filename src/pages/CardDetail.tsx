@@ -38,7 +38,7 @@ export default function CardDetail() {
 
   if (!card) {
     return (
-      <div className="p-6">
+      <div className="min-h-0 p-4 sm:p-6">
         <Card>
           <CardContent className="py-12 text-center">
             <h2 className="text-xl font-semibold">Carta não encontrada</h2>
@@ -69,7 +69,7 @@ export default function CardDetail() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-6 pb-8">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link to="/collections">
