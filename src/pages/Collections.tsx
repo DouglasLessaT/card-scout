@@ -136,7 +136,7 @@ export default function Collections() {
   );
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-6 pb-8">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Minhas Coleções</h1>

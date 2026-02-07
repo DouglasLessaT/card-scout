@@ -59,7 +59,7 @@ export default function Marketplace() {
   });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-6 pb-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>

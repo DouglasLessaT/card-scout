@@ -133,41 +133,41 @@ export default function Scanner() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="min-h-0 flex-1 flex flex-col">
       {scanState === 'idle' && (
-        <div className="flex-1 p-6 space-y-6">
-          <div className="flex items-center gap-4">
+        <div className="flex-1 min-h-0 overflow-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link to="/dashboard">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="shrink-0">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
-            <div>
-              <h1 className="text-2xl font-bold">Scanner de Cartas</h1>
-              <p className="text-muted-foreground">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold truncate">Scanner de Cartas</h1>
+              <p className="text-sm text-muted-foreground line-clamp-2">
                 Escaneie ou busque cartas para adicionar à sua coleção
               </p>
             </div>
           </div>
 
           <Card>
-            <CardContent className="p-6 space-y-6">
+            <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               <div className="space-y-2">
                 <p className="text-sm font-medium">Selecione o jogo (opcional)</p>
                 <GameSelector selected={selectedGame} onSelect={setSelectedGame} />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <Button
                   size="lg"
-                  className="h-24 flex-col gap-2"
+                  className="h-20 sm:h-24 flex-col gap-2"
                   onClick={() => setScanState('camera')}
                 >
-                  <Camera className="h-8 w-8" />
-                  <span>Abrir Câmera</span>
+                  <Camera className="h-7 w-7 sm:h-8 sm:w-8" />
+                  <span className="text-sm sm:text-base">Abrir Câmera</span>
                 </Button>
 
-                <div className="h-24">
+                <div className="h-20 sm:h-24 min-h-[5rem]">
                   <ImageUpload onImageSelect={processImage} />
                 </div>
               </div>
@@ -189,10 +189,13 @@ export default function Scanner() {
                   value={manualSearch}
                   onChange={(e) => setManualSearch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleManualSearch()}
+                  className="min-w-0"
                 />
                 <Button
                   onClick={handleManualSearch}
                   disabled={!manualSearch.trim()}
+                  size="icon"
+                  className="shrink-0"
                 >
                   <Search className="h-4 w-4" />
                 </Button>
@@ -203,7 +206,7 @@ export default function Scanner() {
       )}
 
       {scanState === 'scanning' && (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 min-h-0 flex items-center justify-center p-4">
           <ScanProgress
             stage={scanStage}
             progress={scanProgress}
@@ -213,13 +216,13 @@ export default function Scanner() {
       )}
 
       {scanState === 'results' && (
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
           <CardSearchResults
             cards={foundCards}
             onSelect={handleSelectCard}
             extractedText={extractedText}
           />
-          <div className="p-4 border-t border-border">
+          <div className="p-4 border-t border-border shrink-0">
             <Button variant="outline" className="w-full" onClick={resetScan}>
               Nova Busca
             </Button>

@@ -22,29 +22,29 @@ export default function Dashboard() {
   const recentCards = mockCards.slice(0, 4);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-6 pb-8">
       {/* Welcome Section */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground truncate">
             Olá, {user?.username}! 👋
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Bem-vindo de volta ao OracleCards
           </p>
         </div>
         
         {user?.plan === 'free' && (
-          <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-            <CardContent className="flex items-center gap-4 p-4">
-              <Crown className="h-8 w-8 text-primary" />
-              <div>
-                <p className="font-semibold">Upgrade para Premium</p>
-                <p className="text-sm text-muted-foreground">
+          <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 shrink-0">
+            <CardContent className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
+              <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
+              <div className="min-w-0">
+                <p className="font-semibold text-sm sm:text-base">Upgrade para Premium</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Desbloqueie coleções ilimitadas
                 </p>
               </div>
-              <Button size="sm">
+              <Button size="sm" className="shrink-0">
                 Upgrade
               </Button>
             </CardContent>
@@ -53,16 +53,16 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
               Total de Cartas
             </CardTitle>
-            <FolderOpen className="h-4 w-4 text-muted-foreground" />
+            <FolderOpen className="h-4 w-4 text-muted-foreground shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalCards}</div>
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{totalCards}</div>
             <p className="text-xs text-muted-foreground">
               em {mockCollections.length} coleções
             </p>
@@ -70,14 +70,14 @@ export default function Dashboard() {
         </Card>
         
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
               Valor Total
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-muted-foreground shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="text-xl sm:text-2xl font-bold truncate">
               ${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -87,14 +87,14 @@ export default function Dashboard() {
         </Card>
         
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
               Scans este mês
             </CardTitle>
-            <Scan className="h-4 w-4 text-muted-foreground" />
+            <Scan className="h-4 w-4 text-muted-foreground shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">24</div>
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">24</div>
             <p className="text-xs text-muted-foreground">
               +12% vs mês anterior
             </p>
@@ -103,37 +103,37 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <Card className="hover:border-primary transition-colors">
           <Link to="/scanner">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Scan className="h-6 w-6 text-primary" />
+            <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Scan className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold">Escanear Carta</h3>
-                <p className="text-sm text-muted-foreground">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm sm:text-base">Escanear Carta</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                   Use a câmera para identificar e catalogar
                 </p>
               </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground" />
+              <ArrowRight className="h-5 w-5 text-muted-foreground shrink-0" />
             </CardContent>
           </Link>
         </Card>
         
         <Card className="hover:border-primary transition-colors">
           <Link to="/collections">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                <FolderOpen className="h-6 w-6 text-primary" />
+            <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <FolderOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold">Minhas Coleções</h3>
-                <p className="text-sm text-muted-foreground">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm sm:text-base">Minhas Coleções</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                   Gerencie suas cartas e decks
                 </p>
               </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground" />
+              <ArrowRight className="h-5 w-5 text-muted-foreground shrink-0" />
             </CardContent>
           </Link>
         </Card>
@@ -141,13 +141,13 @@ export default function Dashboard() {
 
       {/* Recent Cards */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Cartas Recentes</CardTitle>
-              <CardDescription>Últimas cartas adicionadas</CardDescription>
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="min-w-0">
+              <CardTitle className="text-base sm:text-lg">Cartas Recentes</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Últimas cartas adicionadas</CardDescription>
             </div>
-            <Link to="/collections">
+            <Link to="/collections" className="shrink-0">
               <Button variant="ghost" size="sm">
                 Ver todas
                 <ArrowRight className="h-4 w-4 ml-1" />
@@ -155,8 +155,8 @@ export default function Dashboard() {
             </Link>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <CardContent className="p-4 sm:p-6 pt-0">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {recentCards.map((card) => (
               <div 
                 key={card.id}
@@ -195,13 +195,13 @@ export default function Dashboard() {
 
       {/* Collections Preview */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Suas Coleções</CardTitle>
-              <CardDescription>Gerencie suas coleções de cartas</CardDescription>
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="min-w-0">
+              <CardTitle className="text-base sm:text-lg">Suas Coleções</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Gerencie suas coleções de cartas</CardDescription>
             </div>
-            <Link to="/collections">
+            <Link to="/collections" className="shrink-0">
               <Button variant="ghost" size="sm">
                 Ver todas
                 <ArrowRight className="h-4 w-4 ml-1" />
@@ -209,13 +209,13 @@ export default function Dashboard() {
             </Link>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
+        <CardContent className="p-4 sm:p-6 pt-0">
+          <div className="space-y-2 sm:space-y-3">
             {mockCollections.map((collection) => (
               <Link 
                 key={collection.id}
                 to={`/collections/${collection.id}`}
-                className="flex items-center gap-4 p-3 rounded-lg border border-border hover:border-primary hover:bg-accent/50 transition-all"
+                className="flex items-center gap-3 sm:gap-4 p-3 rounded-lg border border-border hover:border-primary hover:bg-accent/50 transition-all"
               >
                 <div className="h-12 w-12 rounded-lg overflow-hidden bg-muted">
                   {collection.coverImage && (

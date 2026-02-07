@@ -65,7 +65,7 @@ export default function CollectionDetail() {
 
   if (!collection) {
     return (
-      <div className="p-6">
+      <div className="min-h-0 p-4 sm:p-6">
         <Card>
           <CardContent className="py-12 text-center">
             <h2 className="text-xl font-semibold">Coleção não encontrada</h2>
@@ -79,7 +79,7 @@ export default function CollectionDetail() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-6 pb-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-start gap-4">
         <Link to="/collections">
