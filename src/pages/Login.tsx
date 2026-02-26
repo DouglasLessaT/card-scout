@@ -38,12 +38,12 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md motion-safe:animate-scale-in">
         <CardHeader className="text-center space-y-4">
-          <div className="flex justify-center">
+          <div className="flex justify-center motion-safe:animate-float">
             <img src={logo} alt="OracleCards" className="h-16 w-16" />
           </div>
-          <CardTitle className="text-2xl">Entrar no OracleCards</CardTitle>
+          <CardTitle className="text-2xl font-serif">Entrar no OracleCards</CardTitle>
           <CardDescription>
             Digite suas credenciais para acessar sua conta
           </CardDescription>
@@ -60,6 +60,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                autoComplete="email"
               />
             </div>
             
@@ -72,6 +73,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="current-password"
               />
             </div>
           </CardContent>
@@ -90,12 +92,12 @@ export default function Login() {
             
             <p className="text-sm text-muted-foreground text-center">
               Não tem uma conta?{' '}
-              <Link to="/register" className="text-primary hover:underline">
+              <Link to="/register" className="text-primary hover:underline font-medium">
                 Criar conta
               </Link>
             </p>
             
-            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               ← Voltar para o scanner
             </Link>
           </CardFooter>
