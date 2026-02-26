@@ -45,13 +45,11 @@ export default function Index() {
     setScanProgress(0);
 
     try {
-      // Stage 1: OCR
       const ocrResult = await extractTextFromImage(imageData, (progress) => {
         setScanProgress(progress * 0.5);
       });
       setExtractedText(ocrResult.text);
 
-      // Stage 2: Search
       setScanStage('search');
       setScanProgress(50);
 
@@ -71,7 +69,6 @@ export default function Index() {
       setFoundCards(cards);
       setScanProgress(80);
 
-      // Stage 3: Get exchange rates
       setScanStage('prices');
       const rates = await getExchangeRates();
       setExchangeRates(rates);
@@ -137,7 +134,6 @@ export default function Index() {
     setSelectedGame(null);
   };
 
-  // Camera View
   if (appState === 'camera') {
     return (
       <CameraCapture
@@ -156,23 +152,23 @@ export default function Index() {
         {appState === 'home' && (
           <div className="flex-1 flex flex-col p-4 space-y-6 max-w-2xl mx-auto w-full">
             {/* Hero */}
-            <div className="text-center py-6 space-y-3">
+            <div className="text-center py-8 space-y-4 motion-safe:animate-fade-in">
               <Link to="/login">
-                <div className="inline-flex items-center gap-1 px-3 py-1 bg-accent rounded-full text-accent-foreground text-sm hover:bg-accent/80 transition-colors cursor-pointer">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-accent rounded-full text-accent-foreground text-sm hover:bg-accent/80 transition-colors cursor-pointer">
                   <Sparkles className="h-4 w-4" />
                   <span>Login</span>
                 </div>
               </Link>
-              <h2 className="text-2xl font-bold text-foreground">
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground font-serif leading-tight">
                 Escaneie suas cartas
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-base max-w-md mx-auto">
                 Capture fotos de cartas Magic e Pokémon para identificar e ver preços
               </p>
             </div>
 
             {/* Game Selector */}
-            <div className="space-y-2">
+            <div className="space-y-2 motion-safe:animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <p className="text-sm text-muted-foreground text-center">
                 Selecione o tipo de carta (opcional)
               </p>
@@ -180,26 +176,26 @@ export default function Index() {
             </div>
 
             {/* Feature Cards */}
-            <div className="grid grid-cols-3 gap-3 max-w-md mx-auto w-full">
-              {features.map(({ icon: Icon, title, desc }) => (
+            <div className="grid grid-cols-3 gap-3 max-w-md mx-auto w-full motion-safe:animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              {features.map(({ icon: Icon, title, desc }, i) => (
                 <div
                   key={title}
-                  className="bg-card p-3 rounded-xl border border-border text-center space-y-2"
+                  className="group bg-card p-3 rounded-xl border border-border text-center space-y-2 hover:border-primary/40 hover:shadow-md transition-all duration-300"
                 >
-                  <div className="w-10 h-10 mx-auto rounded-lg bg-primary/10 flex items-center justify-center">
+                  <div className="w-10 h-10 mx-auto rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <Icon className="h-5 w-5 text-primary" />
                   </div>
-                  <p className="font-medium text-sm text-foreground">{title}</p>
+                  <p className="font-semibold text-sm text-foreground">{title}</p>
                   <p className="text-xs text-muted-foreground">{desc}</p>
                 </div>
               ))}
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3 max-w-md mx-auto w-full">
+            <div className="space-y-3 max-w-md mx-auto w-full motion-safe:animate-slide-up" style={{ animationDelay: '0.3s' }}>
               <Button
                 size="lg"
-                className="w-full h-14 gap-3 text-base"
+                className="w-full h-14 gap-3 text-base motion-safe:animate-glow-pulse"
                 onClick={() => setAppState('camera')}
               >
                 <Camera className="h-5 w-5" />
@@ -235,7 +231,7 @@ export default function Index() {
 
             {/* Info Footer */}
             <div className="mt-auto pt-4 border-t border-border">
-              <p className="text-xs text-center text-muted-foreground">
+              <p className="text-xs text-center text-muted-foreground font-mono">
                 APIs: Scryfall (MTG) • Pokemontcg (TGC) • CoinGecko • ExchangeRate
               </p>
             </div>
@@ -244,7 +240,7 @@ export default function Index() {
 
         {/* Scanning State */}
         {appState === 'scanning' && (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-center justify-center motion-safe:animate-fade-in">
             <ScanProgress
               stage={scanStage}
               progress={scanProgress}
@@ -255,7 +251,7 @@ export default function Index() {
 
         {/* Results State */}
         {appState === 'results' && (
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col motion-safe:animate-fade-in">
             <CardSearchResults
               cards={foundCards}
               onSelect={handleSelectCard}

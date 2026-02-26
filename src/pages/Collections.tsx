@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { mockCollections, mockCards } from '@/data/mockData';
+import { mockCollections } from '@/data/mockData';
 import { Collection } from '@/types/collection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
+import { GameBadge } from '@/components/GameBadge';
 import {
   Dialog,
   DialogContent,
@@ -47,14 +49,15 @@ export default function Collections() {
 
   const CollectionCard = ({ collection }: { collection: Collection }) => (
     <Link to={`/collections/${collection.id}`}>
-      <Card className="hover:border-primary transition-all h-full">
+      <Card className="group hover:border-primary hover:shadow-lg transition-all duration-300 h-full">
         <CardContent className="p-0">
           <div className="aspect-video relative overflow-hidden rounded-t-lg bg-muted">
             {collection.coverImage && (
               <img
                 src={collection.coverImage}
                 alt={collection.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
               />
             )}
             <div className="absolute top-2 right-2 flex gap-1">
@@ -62,19 +65,17 @@ export default function Collections() {
                 <Badge variant="secondary" className="text-xs">Deck</Badge>
               )}
               {collection.isPublic ? (
-                <Badge variant="outline" className="bg-background/80">
+                <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">
                   <Globe className="h-3 w-3" />
                 </Badge>
               ) : (
-                <Badge variant="outline" className="bg-background/80">
+                <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">
                   <Lock className="h-3 w-3" />
                 </Badge>
               )}
             </div>
             <div className="absolute bottom-2 left-2">
-              <Badge variant={collection.game === 'mtg' ? 'default' : 'secondary'}>
-                {collection.game === 'mtg' ? 'MTG' : 'PKM'}
-              </Badge>
+              <GameBadge game={collection.game as 'mtg' | 'pokemon'} />
             </div>
           </div>
           <div className="p-4 space-y-2">
@@ -86,10 +87,11 @@ export default function Collections() {
             )}
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>{collection.cardsCount} cartas</span>
-              <span className="font-medium text-foreground">
+              <span className="font-medium text-foreground font-mono">
                 ${collection.totalValue.toFixed(2)}
               </span>
             </div>
+            <Progress value={Math.min(collection.cardsCount / 2, 100)} className="h-1.5 bg-muted" />
           </div>
         </CardContent>
       </Card>
@@ -98,7 +100,7 @@ export default function Collections() {
 
   const CollectionListItem = ({ collection }: { collection: Collection }) => (
     <Link to={`/collections/${collection.id}`}>
-      <Card className="hover:border-primary transition-all">
+      <Card className="group hover:border-primary hover:shadow-md transition-all duration-300">
         <CardContent className="flex items-center gap-4 p-4">
           <div className="h-16 w-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
             {collection.coverImage && (
@@ -106,6 +108,7 @@ export default function Collections() {
                 src={collection.coverImage}
                 alt={collection.name}
                 className="w-full h-full object-cover"
+                loading="lazy"
               />
             )}
           </div>
@@ -117,13 +120,12 @@ export default function Collections() {
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              {collection.cardsCount} cartas • ${collection.totalValue.toFixed(2)}
+              {collection.cardsCount} cartas • <span className="font-mono">${collection.totalValue.toFixed(2)}</span>
             </p>
+            <Progress value={Math.min(collection.cardsCount / 2, 100)} className="h-1 bg-muted mt-1.5" />
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={collection.game === 'mtg' ? 'default' : 'secondary'}>
-              {collection.game === 'mtg' ? 'MTG' : 'PKM'}
-            </Badge>
+            <GameBadge game={collection.game as 'mtg' | 'pokemon'} />
             {collection.isPublic ? (
               <Globe className="h-4 w-4 text-muted-foreground" />
             ) : (
@@ -137,9 +139,9 @@ export default function Collections() {
 
   return (
     <div className="min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-6 pb-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 motion-safe:animate-fade-in">
         <div>
-          <h1 className="text-2xl font-bold">Minhas Coleções</h1>
+          <h1 className="text-2xl font-bold font-serif">Minhas Coleções</h1>
           <p className="text-muted-foreground">
             Gerencie suas cartas e decks
           </p>
@@ -155,7 +157,7 @@ export default function Collections() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Criar Nova Coleção</DialogTitle>
+                <DialogTitle className="font-serif">Criar Nova Coleção</DialogTitle>
                 <DialogDescription>
                   Crie uma coleção personalizada para organizar suas cartas
                 </DialogDescription>
@@ -191,7 +193,7 @@ export default function Collections() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-4 motion-safe:animate-slide-up">
         <div className="flex-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -200,6 +202,7 @@ export default function Collections() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
+              aria-label="Buscar coleções"
             />
           </div>
         </div>
@@ -212,11 +215,13 @@ export default function Collections() {
           </TabsList>
         </Tabs>
         
-        <div className="flex gap-1 border rounded-md p-1">
+        <div className="flex gap-1 border rounded-md p-1" role="group" aria-label="Modo de visualização">
           <Button
             variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
             size="icon"
             onClick={() => setViewMode('grid')}
+            aria-label="Visualização em grade"
+            aria-pressed={viewMode === 'grid'}
           >
             <LayoutGrid className="h-4 w-4" />
           </Button>
@@ -224,6 +229,8 @@ export default function Collections() {
             variant={viewMode === 'list' ? 'secondary' : 'ghost'}
             size="icon"
             onClick={() => setViewMode('list')}
+            aria-label="Visualização em lista"
+            aria-pressed={viewMode === 'list'}
           >
             <List className="h-4 w-4" />
           </Button>
@@ -232,10 +239,10 @@ export default function Collections() {
 
       {/* Collections */}
       {filteredCollections.length === 0 ? (
-        <Card>
+        <Card className="motion-safe:animate-fade-in">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <FolderOpen className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="font-semibold text-lg">Nenhuma coleção encontrada</h3>
+            <h3 className="font-semibold text-lg font-serif">Nenhuma coleção encontrada</h3>
             <p className="text-muted-foreground text-center max-w-md">
               {searchQuery 
                 ? 'Tente buscar por outro termo'

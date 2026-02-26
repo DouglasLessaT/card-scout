@@ -5,8 +5,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Design System — OracleCards 2026
+   All colors MUST be HSL.
+   Game-specific palettes via CSS custom properties.
 */
 
 @layer base {
@@ -57,6 +58,22 @@ All colors MUST be HSL.
     --chart-5: 249 40% 45%;
 
     --sidebar: 249 50% 18%;
+
+    /* Game-specific palettes */
+    --game-mtg: 220 70% 50%;
+    --game-mtg-foreground: 0 0% 100%;
+    --game-pokemon: 48 95% 50%;
+    --game-pokemon-foreground: 48 60% 12%;
+    --game-onepiece: 0 80% 50%;
+    --game-onepiece-foreground: 0 0% 100%;
+
+    /* Gamification */
+    --xp: 142 72% 45%;
+    --xp-foreground: 0 0% 100%;
+    --streak: 35 95% 55%;
+    --achievement-gold: 45 90% 55%;
+    --achievement-silver: 210 10% 65%;
+    --achievement-bronze: 25 50% 45%;
 
     --font-sans: 'Lato', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
     --font-serif: 'EB Garamond', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
@@ -117,6 +134,21 @@ All colors MUST be HSL.
     --chart-4: 15 80% 55%;
     --chart-5: 249 30% 50%;
     --sidebar: 249 50% 10%;
+
+    --game-mtg: 220 65% 60%;
+    --game-mtg-foreground: 0 0% 100%;
+    --game-pokemon: 48 90% 55%;
+    --game-pokemon-foreground: 48 60% 12%;
+    --game-onepiece: 0 75% 60%;
+    --game-onepiece-foreground: 0 0% 100%;
+
+    --xp: 142 65% 50%;
+    --xp-foreground: 0 0% 100%;
+    --streak: 35 90% 60%;
+    --achievement-gold: 45 85% 60%;
+    --achievement-silver: 210 10% 70%;
+    --achievement-bronze: 25 45% 50%;
+
     --shadow-2xs: 0 1px 3px 0px hsl(249 50% 5% / 0.15);
     --shadow-xs: 0 1px 3px 0px hsl(249 50% 5% / 0.15);
     --shadow-sm: 0 1px 3px 0px hsl(249 50% 5% / 0.2), 0 1px 2px -1px hsl(249 50% 5% / 0.2);
@@ -135,5 +167,72 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Motion Design — respects prefers-reduced-motion */
+@layer utilities {
+  @media (prefers-reduced-motion: reduce) {
+    .motion-safe\:animate-fade-in,
+    .motion-safe\:animate-slide-up,
+    .motion-safe\:animate-scale-in,
+    .motion-safe\:animate-card-hover,
+    .motion-safe\:animate-glow-pulse {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+/* Card 3D perspective */
+.card-3d {
+  perspective: 800px;
+  transform-style: preserve-3d;
+}
+
+.card-3d-inner {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card-3d:hover .card-3d-inner {
+    transform: rotateY(6deg) rotateX(3deg) scale(1.02);
+  }
+}
+
+/* Foil holographic shimmer effect */
+@keyframes foil-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.foil-effect {
+  background: linear-gradient(
+    120deg,
+    transparent 20%,
+    hsl(280 60% 55% / 0.15) 30%,
+    hsl(25 95% 53% / 0.15) 50%,
+    hsl(180 60% 50% / 0.15) 70%,
+    transparent 80%
+  );
+  background-size: 200% 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .foil-effect {
+    animation: foil-shimmer 3s ease-in-out infinite;
+  }
+}
+
+/* Achievement unlock glow */
+@keyframes achievement-glow {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(45 90% 55% / 0); }
+  50% { box-shadow: 0 0 20px 4px hsl(45 90% 55% / 0.4); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .achievement-glow {
+    animation: achievement-glow 2s ease-in-out;
   }
 }

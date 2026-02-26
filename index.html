@@ -19,6 +19,15 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@OracleCards" />
     <meta name="twitter:image" content="/favicon.svg" />
+    <!-- Prevent dark mode flash -->
+    <script>
+      (function() {
+        var theme = localStorage.getItem('theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
 
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
