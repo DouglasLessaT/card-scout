@@ -11,7 +11,7 @@ interface Translations {
 
 export const translations: Translations = {
   // Header
-  appName: { pt: 'OracleCards', en: 'OracleCards' },
+  appName: { pt: 'OracleTgc', en: 'OracleTgc' },
   appSubtitle: { pt: 'MTG & Pokémon', en: 'MTG & Pokémon' },
   mvp: { pt: 'MVP', en: 'MVP' },
   

@@ -33,12 +33,12 @@ export function ImageUpload({ onImageSelect }: ImageUploadProps) {
         className="hidden"
       />
       <Button
-        variant="outline"
+        size="lg"
         onClick={() => inputRef.current?.click()}
-        className="flex-1 h-14 gap-3"
+        className="w-full h-14 gap-3 text-base"
       >
-        <ImageIcon className="h-5 w-5" />
-        <span>Galeria</span>
+        <ImageIcon className="h-5 w-5 sm:h-8 sm:w-8" />
+        <span className="text-sm sm:text-base">Galeria</span>
       </Button>
     </>
   );

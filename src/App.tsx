@@ -5,24 +5,28 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { AuthenticatedLayout } from "@/components/AuthenticatedLayout";
+import { AuthenticatedLayout } from "@/components/layout/AuthenticatedLayout";
 
-// Public Pages
-import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import VerifyToken from "./pages/VerifyToken";
-import CompleteProfile from "./pages/CompleteProfile";
-import NotFound from "./pages/NotFound";
+// Public Pages (acessíveis sem login)
+import Index from "./pages/public/Index";
+import Login from "./pages/public/Login";
+import Register from "./pages/public/Register";
+import VerifyToken from "./pages/public/VerifyToken";
+import CompleteProfile from "./pages/public/CompleteProfile";
+import NotFound from "./pages/public/NotFound";
+import ScannerTest from "./pages/public/ScannerTest";
 
-// Authenticated Pages
-import Dashboard from "./pages/Dashboard";
-import Scanner from "./pages/Scanner";
-import Collections from "./pages/Collections";
-import CollectionDetail from "./pages/CollectionDetail";
-import CardDetail from "./pages/CardDetail";
-import Profile from "./pages/Profile";
-import Marketplace from "./pages/Marketplace";
+
+// Authenticated Pages (exigem login via AuthenticatedLayout)
+import Dashboard from "./pages/authenticated/Dashboard";
+import Scanner from "./pages/authenticated/Scanner";
+import Collections from "./pages/authenticated/Collections";
+import CollectionDetail from "./pages/authenticated/CollectionDetail";
+import CardDetail from "./pages/authenticated/CardDetail";
+import Profile from "./pages/authenticated/Profile";
+import Settings from "./pages/authenticated/Settings";
+import Marketplace from "./pages/authenticated/Marketplace";
+import FeedUser from "./pages/authenticated/FeedUser";
 
 const queryClient = new QueryClient();
 
@@ -41,7 +45,8 @@ const App = () => (
               <Route path="/register" element={<Register />} />
               <Route path="/verify-token" element={<VerifyToken />} />
               <Route path="/complete-profile" element={<CompleteProfile />} />
-              
+              <Route path="/scanner-test" element={<ScannerTest />} />
+
               {/* Authenticated Routes */}
               <Route path="/dashboard" element={
                 <AuthenticatedLayout>
@@ -73,9 +78,19 @@ const App = () => (
                   <Profile />
                 </AuthenticatedLayout>
               } />
+              <Route path="/settings" element={
+                <AuthenticatedLayout>
+                  <Settings />
+                </AuthenticatedLayout>
+              } />
               <Route path="/marketplace" element={
                 <AuthenticatedLayout>
                   <Marketplace />
+                </AuthenticatedLayout>
+              } />
+              <Route path="/feed" element={
+                <AuthenticatedLayout>
+                  <FeedUser />
                 </AuthenticatedLayout>
               } />
               

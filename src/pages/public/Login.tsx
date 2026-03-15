@@ -1,36 +1,40 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, UserPlus } from 'lucide-react';
+import { Loader2, LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import logo from '@/assets/logo.svg';
 
-export default function Register() {
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const { register, isLoading } = useAuth();
+export default function Login() {
+  const location = useLocation();
+  const stateEmail = (location.state as { email?: string })?.email;
+  const [email, setEmail] = useState(stateEmail ?? '');
+  const [password, setPassword] = useState('');
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (stateEmail) setEmail(stateEmail);
+  }, [stateEmail]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const success = await register(email, phone);
-    
-    if (success) {
+    const result = await login(email, password);
+    if (result.success) {
       toast({
-        title: 'Código enviado!',
-        description: 'Verifique seu email ou telefone.',
+        title: 'Login realizado!',
+        description: 'Bem-vindo de volta!',
       });
-      navigate('/verify-token', { state: { type: 'register', email, phone } });
+      navigate('/dashboard');
     } else {
       toast({
-        title: 'Erro no cadastro',
-        description: 'Verifique os dados informados.',
+        title: 'Erro no login',
+        description: result.errorMessage || 'Email ou senha inválidos.',
         variant: 'destructive',
       });
     }
@@ -41,11 +45,11 @@ export default function Register() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
-            <img src={logo} alt="OracleCards" className="h-16 w-16" />
+            <img src={logo} alt="OracleTgc" className="h-16 w-16" />
           </div>
-          <CardTitle className="text-2xl">Criar Conta</CardTitle>
+          <CardTitle className="text-2xl">Entrar no OracleTgc</CardTitle>
           <CardDescription>
-            Preencha seus dados para começar
+            Digite suas credenciais para acessar sua conta
           </CardDescription>
         </CardHeader>
         
@@ -64,13 +68,13 @@ export default function Register() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="phone">Telefone</Label>
+              <Label htmlFor="password">Senha</Label>
               <Input
-                id="phone"
-                type="tel"
-                placeholder="+55 11 99999-9999"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
@@ -82,16 +86,16 @@ export default function Register() {
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <>
-                  <UserPlus className="h-4 w-4" />
-                  Continuar
+                  <LogIn className="h-4 w-4" />
+                  Entrar
                 </>
               )}
             </Button>
             
             <p className="text-sm text-muted-foreground text-center">
-              Já tem uma conta?{' '}
-              <Link to="/login" className="text-primary hover:underline">
-                Fazer login
+              Não tem uma conta?{' '}
+              <Link to="/register" className="text-primary hover:underline">
+                Criar conta
               </Link>
             </p>
             

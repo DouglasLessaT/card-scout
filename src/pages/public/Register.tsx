@@ -5,32 +5,32 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, LogIn } from 'lucide-react';
+import { Loader2, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import logo from '@/assets/logo.svg';
 
-export default function Login() {
+export default function Register() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login, isLoading } = useAuth();
+  const [phone, setPhone] = useState('');
+  const { register, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const success = await login(email, password);
+    const success = await register(email, phone);
     
     if (success) {
       toast({
-        title: 'Login realizado!',
-        description: 'Bem-vindo de volta!',
+        title: 'Código enviado!',
+        description: 'Verifique seu email ou telefone.',
       });
-      navigate('/verify-token', { state: { type: 'login' } });
+      navigate('/verify-token', { state: { type: 'register', email, phone } });
     } else {
       toast({
-        title: 'Erro no login',
-        description: 'Email ou senha inválidos.',
+        title: 'Erro no cadastro',
+        description: 'Verifique os dados informados.',
         variant: 'destructive',
       });
     }
@@ -38,14 +38,14 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md motion-safe:animate-scale-in">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
-          <div className="flex justify-center motion-safe:animate-float">
-            <img src={logo} alt="OracleCards" className="h-16 w-16" />
+          <div className="flex justify-center">
+            <img src={logo} alt="OracleTgc" className="h-16 w-16" />
           </div>
-          <CardTitle className="text-2xl font-serif">Entrar no OracleCards</CardTitle>
+          <CardTitle className="text-2xl">Criar Conta</CardTitle>
           <CardDescription>
-            Digite suas credenciais para acessar sua conta
+            Preencha seus dados para começar
           </CardDescription>
         </CardHeader>
         
@@ -60,20 +60,18 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                autoComplete="email"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="phone">Telefone</Label>
               <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="phone"
+                type="tel"
+                placeholder="+55 11 99999-9999"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 required
-                autoComplete="current-password"
               />
             </div>
           </CardContent>
@@ -84,20 +82,20 @@ export default function Login() {
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <>
-                  <LogIn className="h-4 w-4" />
-                  Entrar
+                  <UserPlus className="h-4 w-4" />
+                  Continuar
                 </>
               )}
             </Button>
             
             <p className="text-sm text-muted-foreground text-center">
-              Não tem uma conta?{' '}
-              <Link to="/register" className="text-primary hover:underline font-medium">
-                Criar conta
+              Já tem uma conta?{' '}
+              <Link to="/login" className="text-primary hover:underline">
+                Fazer login
               </Link>
             </p>
             
-            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
               ← Voltar para o scanner
             </Link>
           </CardFooter>

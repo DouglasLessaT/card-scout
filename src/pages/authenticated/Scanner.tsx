@@ -1,36 +1,42 @@
 import { useState, useCallback } from 'react';
-import { Camera, Search, Upload, ArrowLeft } from 'lucide-react';
+import { Camera, Search, ArrowLeft, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { CameraCapture } from '@/components/CameraCapture';
-import { ImageUpload } from '@/components/ImageUpload';
-import { ScanProgress } from '@/components/ScanProgress';
-import { CardSearchResults } from '@/components/CardSearchResults';
-import { CardResult } from '@/components/CardResult';
-import { GameSelector } from '@/components/GameSelector';
+import { Badge } from '@/components/ui/badge';
+import { CameraCapture } from '@/components/scanner/CameraCapture';
+import { ImageUpload } from '@/components/scanner/ImageUpload';
+import { ScanProgress, ScanStage } from '@/components/scanner/ScanProgress';
+import { CardSearchResults } from '@/components/scanner/CardSearchResults';
+import { CardResult } from '@/components/scanner/CardResult';
+import { GameSelector } from '@/components/scanner/GameSelector';
 import { CardInfo, CardGame, ExchangeRates } from '@/types/card';
 import { extractTextFromImage, parseCardInfo } from '@/services/ocrService';
 import { searchCard } from '@/services/cardApiService';
 import { getExchangeRates } from '@/services/currencyService';
+import { detectFoil, FoilDetectionResult } from '@/services/scanService';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 
-type ScanState = 'idle' | 'camera' | 'scanning' | 'results' | 'detail';
-type ScanStage = 'ocr' | 'search' | 'prices';
+type ScanState = 'idle' | 'camera' | 'foil-camera' | 'scanning' | 'results' | 'detail';
 
 export default function Scanner() {
-  const [scanState, setScanState] = useState<ScanState>('idle');
-  const [scanStage, setScanStage] = useState<ScanStage>('ocr');
-  const [scanProgress, setScanProgress] = useState(0);
-  const [capturedImage, setCapturedImage] = useState<string>('');
-  const [foundCards, setFoundCards] = useState<CardInfo[]>([]);
+  const [scanState,         setScanState]         = useState<ScanState>('idle');
+  const [scanStage,         setScanStage]         = useState<ScanStage>('ocr');
+  const [scanProgress,      setScanProgress]      = useState(0);
+  const [capturedImage,     setCapturedImage]     = useState<string>('');
+  const [foundCards,        setFoundCards]        = useState<CardInfo[]>([]);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(0);
-  const [exchangeRates, setExchangeRates] = useState<ExchangeRates>({ brl: 5, btc: 0.00001 });
-  const [extractedText, setExtractedText] = useState('');
-  const [manualSearch, setManualSearch] = useState('');
-  const [selectedGame, setSelectedGame] = useState<CardGame | null>(null);
+  const [exchangeRates,     setExchangeRates]     = useState<ExchangeRates>({ brl: 5, btc: 0.00001 });
+  const [extractedText,     setExtractedText]     = useState('');
+  const [manualSearch,      setManualSearch]      = useState('');
+  const [selectedGame,      setSelectedGame]      = useState<CardGame | null>(null);
+  const [foilResult,        setFoilResult]        = useState<FoilDetectionResult | null>(null);
   const { toast } = useToast();
+
+  // -------------------------------------------------------------------------
+  // Scan OCR normal (1 frame)
+  // -------------------------------------------------------------------------
 
   const processImage = useCallback(async (imageData: string) => {
     setCapturedImage(imageData);
@@ -48,7 +54,6 @@ export default function Scanner() {
       setScanProgress(50);
 
       const { possibleName } = parseCardInfo(ocrResult.text);
-      
       if (!possibleName) {
         toast({
           title: 'Texto não identificado',
@@ -69,20 +74,50 @@ export default function Scanner() {
       setScanProgress(100);
 
       setScanState('results');
-    } catch (error) {
-      console.error('Scan error:', error);
+    } catch {
+      toast({ title: 'Erro ao processar', description: 'Ocorreu um erro. Tente novamente.', variant: 'destructive' });
+      setScanState('idle');
+    }
+  }, [toast, selectedGame]);
+
+  // -------------------------------------------------------------------------
+  // Scan FOIL (5 frames consecutivos)
+  // -------------------------------------------------------------------------
+
+  const handleFoilFrames = useCallback(async (frames: string[]) => {
+    setCapturedImage(frames[0] ?? '');
+    setScanState('scanning');
+    setScanStage('foil');
+    setScanProgress(20);
+
+    try {
+      setScanProgress(50);
+      const result = await detectFoil(frames, selectedGame || undefined);
+      setFoilResult(result);
+      setScanProgress(100);
+
       toast({
-        title: 'Erro ao processar',
-        description: 'Ocorreu um erro. Tente novamente.',
+        title: result.isFoil ? '✨ Carta FOIL detectada!' : 'Carta não-FOIL',
+        description: `Confiança: ${result.confidence.toFixed(1)}%`,
+      });
+
+      setScanState('idle');
+    } catch (err) {
+      toast({
+        title: 'Erro na detecção FOIL',
+        description: err instanceof Error ? err.message : 'Tente novamente.',
         variant: 'destructive',
       });
       setScanState('idle');
     }
   }, [toast, selectedGame]);
 
+  // -------------------------------------------------------------------------
+  // Busca manual
+  // -------------------------------------------------------------------------
+
   const handleManualSearch = async () => {
     if (!manualSearch.trim()) return;
-
     setScanState('scanning');
     setScanStage('search');
     setScanProgress(30);
@@ -98,12 +133,8 @@ export default function Scanner() {
       setScanProgress(100);
 
       setScanState('results');
-    } catch (error) {
-      toast({
-        title: 'Erro na busca',
-        description: 'Não foi possível buscar a carta.',
-        variant: 'destructive',
-      });
+    } catch {
+      toast({ title: 'Erro na busca', description: 'Não foi possível buscar a carta.', variant: 'destructive' });
       setScanState('idle');
     }
   };
@@ -121,16 +152,37 @@ export default function Scanner() {
     setSelectedCardIndex(0);
     setExtractedText('');
     setManualSearch('');
+    setFoilResult(null);
   };
+
+  // -------------------------------------------------------------------------
+  // Camera states (renderizados fora do layout principal)
+  // -------------------------------------------------------------------------
 
   if (scanState === 'camera') {
     return (
       <CameraCapture
+        mode="single"
         onCapture={processImage}
         onClose={() => setScanState('idle')}
       />
     );
   }
+
+  if (scanState === 'foil-camera') {
+    return (
+      <CameraCapture
+        mode="foil"
+        onCapture={processImage}
+        onFoilCapture={handleFoilFrames}
+        onClose={() => setScanState('idle')}
+      />
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Layout principal
+  // -------------------------------------------------------------------------
 
   return (
     <div className="min-h-0 flex-1 flex flex-col">
@@ -150,6 +202,28 @@ export default function Scanner() {
             </div>
           </div>
 
+          {/* Resultado da última detecção FOIL */}
+          {foilResult && (
+            <Card className={`border-2 ${foilResult.isFoil ? 'border-yellow-400' : 'border-border'}`}>
+              <CardContent className="p-4 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <Sparkles className={`h-5 w-5 shrink-0 ${foilResult.isFoil ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium">
+                      {foilResult.isFoil ? 'Carta FOIL detectada' : 'Carta não-FOIL'}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      Confiança: {foilResult.confidence.toFixed(1)}% · {foilResult.details.framesAnalyzed} frames analisados
+                    </p>
+                  </div>
+                </div>
+                <Badge variant={foilResult.isFoil ? 'default' : 'secondary'} className="shrink-0">
+                  {foilResult.isFoil ? 'FOIL' : 'Normal'}
+                </Badge>
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               <div className="space-y-2">
@@ -160,26 +234,35 @@ export default function Scanner() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <Button
                   size="lg"
-                  className="h-20 sm:h-24 flex-col gap-2"
+                  className="w-full h-14 gap-3 text-base"
                   onClick={() => setScanState('camera')}
                 >
-                  <Camera className="h-7 w-7 sm:h-8 sm:w-8" />
+                  <Camera className="h-5 w-5" />
                   <span className="text-sm sm:text-base">Abrir Câmera</span>
                 </Button>
 
-                <div className="h-20 sm:h-24 min-h-[5rem]">
+                <div className="w-full min-h-[3.5rem]">
                   <ImageUpload onImageSelect={processImage} />
                 </div>
               </div>
+
+              {/* Botão de detecção FOIL */}
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full h-12 gap-2 border-yellow-400/50 hover:border-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-950/20"
+                onClick={() => { setFoilResult(null); setScanState('foil-camera'); }}
+              >
+                <Sparkles className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm">Detectar FOIL</span>
+              </Button>
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">
-                    ou busque manualmente
-                  </span>
+                  <span className="bg-card px-2 text-muted-foreground">ou busque manualmente</span>
                 </div>
               </div>
 

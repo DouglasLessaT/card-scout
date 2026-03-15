@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { Camera, Search, TrendingUp, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Header } from '@/components/Header';
-import { CameraCapture } from '@/components/CameraCapture';
-import { ImageUpload } from '@/components/ImageUpload';
-import { ScanProgress } from '@/components/ScanProgress';
-import { CardSearchResults } from '@/components/CardSearchResults';
-import { CardResult } from '@/components/CardResult';
-import { GameSelector } from '@/components/GameSelector';
+import { Header } from '@/components/layout/Header';
+import { CameraCapture } from '@/components/scanner/CameraCapture';
+import { ImageUpload } from '@/components/scanner/ImageUpload';
+import { ScanProgress } from '@/components/scanner/ScanProgress';
+import { CardSearchResults } from '@/components/scanner/CardSearchResults';
+import { CardResult } from '@/components/scanner/CardResult';
+import { GameSelector } from '@/components/scanner/GameSelector';
 import { CardInfo, CardGame, ExchangeRates } from '@/types/card';
 import { extractTextFromImage, parseCardInfo } from '@/services/ocrService';
 import { searchCard } from '@/services/cardApiService';
@@ -25,7 +25,7 @@ const features = [
   { icon: TrendingUp, title: 'Preços', desc: 'USD, BRL e BTC' },
 ];
 
-export default function Index() {
+export default function ScannerTest() {
   const [appState, setAppState] = useState<AppState>('home');
   const [scanStage, setScanStage] = useState<ScanStage>('ocr');
   const [scanProgress, setScanProgress] = useState(0);
@@ -54,7 +54,7 @@ export default function Index() {
       setScanProgress(50);
 
       const { possibleName } = parseCardInfo(ocrResult.text);
-      
+
       if (!possibleName) {
         toast({
           title: 'Texto não identificado',
@@ -84,7 +84,7 @@ export default function Index() {
       });
       setAppState('home');
     }
-  }, [toast]);
+  }, [toast, selectedGame]);
 
   const handleManualSearch = async () => {
     if (!manualSearch.trim()) return;
@@ -148,54 +148,49 @@ export default function Index() {
       <Header />
 
       <main className="flex-1 flex flex-col">
-        {/* Home State */}
         {appState === 'home' && (
           <div className="flex-1 flex flex-col p-4 space-y-6 max-w-2xl mx-auto w-full">
-            {/* Hero */}
-            <div className="text-center py-8 space-y-4 motion-safe:animate-fade-in">
+            <div className="text-center py-6 space-y-3">
               <Link to="/login">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-accent rounded-full text-accent-foreground text-sm hover:bg-accent/80 transition-colors cursor-pointer">
+                <div className="inline-flex items-center gap-1 px-3 py-1 bg-accent rounded-full text-accent-foreground text-sm hover:bg-accent/80 transition-colors cursor-pointer">
                   <Sparkles className="h-4 w-4" />
                   <span>Login</span>
                 </div>
               </Link>
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground font-serif leading-tight">
-                Escaneie suas cartas
+              <h2 className="text-2xl font-bold text-foreground">
+                Teste o Scanner
               </h2>
-              <p className="text-muted-foreground text-base max-w-md mx-auto">
+              <p className="text-muted-foreground">
                 Capture fotos de cartas Magic e Pokémon para identificar e ver preços
               </p>
             </div>
 
-            {/* Game Selector */}
-            <div className="space-y-2 motion-safe:animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="space-y-2">
               <p className="text-sm text-muted-foreground text-center">
                 Selecione o tipo de carta (opcional)
               </p>
               <GameSelector selected={selectedGame} onSelect={setSelectedGame} />
             </div>
 
-            {/* Feature Cards */}
-            <div className="grid grid-cols-3 gap-3 max-w-md mx-auto w-full motion-safe:animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              {features.map(({ icon: Icon, title, desc }, i) => (
+            <div className="grid grid-cols-3 gap-3 max-w-md mx-auto w-full">
+              {features.map(({ icon: Icon, title, desc }) => (
                 <div
                   key={title}
-                  className="group bg-card p-3 rounded-xl border border-border text-center space-y-2 hover:border-primary/40 hover:shadow-md transition-all duration-300"
+                  className="bg-card p-3 rounded-xl border border-border text-center space-y-2"
                 >
-                  <div className="w-10 h-10 mx-auto rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <div className="w-10 h-10 mx-auto rounded-lg bg-primary/10 flex items-center justify-center">
                     <Icon className="h-5 w-5 text-primary" />
                   </div>
-                  <p className="font-semibold text-sm text-foreground">{title}</p>
+                  <p className="font-medium text-sm text-foreground">{title}</p>
                   <p className="text-xs text-muted-foreground">{desc}</p>
                 </div>
               ))}
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-3 max-w-md mx-auto w-full motion-safe:animate-slide-up" style={{ animationDelay: '0.3s' }}>
+            <div className="space-y-3 max-w-md mx-auto w-full">
               <Button
                 size="lg"
-                className="w-full h-14 gap-3 text-base motion-safe:animate-glow-pulse"
+                className="w-full h-14 gap-3 text-base"
                 onClick={() => setAppState('camera')}
               >
                 <Camera className="h-5 w-5" />
@@ -207,7 +202,6 @@ export default function Index() {
               </div>
             </div>
 
-            {/* Manual Search */}
             <div className="space-y-2 max-w-md mx-auto w-full">
               <p className="text-sm text-muted-foreground text-center">
                 ou busque manualmente
@@ -229,18 +223,16 @@ export default function Index() {
               </div>
             </div>
 
-            {/* Info Footer */}
             <div className="mt-auto pt-4 border-t border-border">
-              <p className="text-xs text-center text-muted-foreground font-mono">
+              <p className="text-xs text-center text-muted-foreground">
                 APIs: Scryfall (MTG) • Pokemontcg (TGC) • CoinGecko • ExchangeRate
               </p>
             </div>
           </div>
         )}
 
-        {/* Scanning State */}
         {appState === 'scanning' && (
-          <div className="flex-1 flex items-center justify-center motion-safe:animate-fade-in">
+          <div className="flex-1 flex items-center justify-center">
             <ScanProgress
               stage={scanStage}
               progress={scanProgress}
@@ -249,9 +241,8 @@ export default function Index() {
           </div>
         )}
 
-        {/* Results State */}
         {appState === 'results' && (
-          <div className="flex-1 flex flex-col motion-safe:animate-fade-in">
+          <div className="flex-1 flex flex-col">
             <CardSearchResults
               cards={foundCards}
               onSelect={handleSelectCard}
@@ -265,7 +256,6 @@ export default function Index() {
           </div>
         )}
 
-        {/* Detail State */}
         {appState === 'detail' && foundCards.length > 0 && (
           <CardResult
             cards={foundCards}

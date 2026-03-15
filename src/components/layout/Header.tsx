@@ -24,9 +24,7 @@ export function Header() {
             size="icon"
             onClick={toggleTheme}
             className="h-9 w-9"
-            aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
-            role="switch"
-            aria-checked={theme === 'dark'}
+            aria-label="Toggle theme"
           >
             {theme === 'dark' ? (
               <Sun className="h-4 w-4" />
@@ -60,9 +58,9 @@ export function Header() {
 
         {/* Center: Logo */}
         <div className="flex items-center gap-2">
-          <img src={logoSvg} alt="OracleCards Logo" className="w-10 h-10" />
+          <img src={logoSvg} alt="OracleTgc Logo" className="w-10 h-10" />
           <div>
-            <h1 className="font-bold text-foreground font-serif">{t('appName')}</h1>
+            <h1 className="font-bold text-foreground">{t('appName')}</h1>
             <p className="text-xs text-muted-foreground">{t('appSubtitle')}</p>
           </div>
         </div>
